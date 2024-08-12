@@ -15,7 +15,7 @@ class MesaService {
     }
   }
 
-  Future<void> updateMesa(int id, String estatus, String cliente, int numero, int comanda) async {
+  Future<void> updateMesa(int id, String estatus, String cliente, int numero, int? comanda) async {
     final response = await http.put(
       Uri.parse('$apiUrl/mesas/$id'),
       headers: {'Content-Type': 'application/json'},
@@ -23,7 +23,7 @@ class MesaService {
         'estatus': estatus,
         'cliente': cliente,
         'numero': numero,
-        'comanda': comanda
+        // 'comanda': comanda, // Comanda ya no se envía desde el cliente
       }),
     );
     if (response.statusCode != 200) {
@@ -43,6 +43,7 @@ class MesaService {
       throw Exception('Error al actualizar el estado de la mesa');
     }
   }
+
   Future<Map<String, dynamic>> entregarComida(int mesaId) async {
     final response = await http.put(
       Uri.parse('$apiUrl/entregar_comida/$mesaId'),
@@ -54,6 +55,7 @@ class MesaService {
       throw Exception('Error al entregar comida');
     }
   }
+
   Future<Map<String, dynamic>> pedirCuenta(int mesaId) async {
     final response = await http.put(
       Uri.parse('$apiUrl/pedircuenta/$mesaId'),
@@ -65,6 +67,7 @@ class MesaService {
       throw Exception('Error al entregar comida');
     }
   }
+
   Future<Map<String, dynamic>> limpiarMesa(int mesaId) async {
     final response = await http.put(
       Uri.parse('$apiUrl/limpiar/$mesaId'),

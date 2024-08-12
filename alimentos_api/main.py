@@ -108,11 +108,17 @@ def actualizar_mesa(mesa_id):
     if not mesa_existente:
         return jsonify({'message': 'Mesa no encontrada'}), 404
 
+    # Se obtiene el próximo número de comanda si la mesa se está asignando y no tiene ya una comanda
+    if mesa_existente['estatus'] == 'libre' and data.get('estatus') == 'asignada':
+        next_comanda = get_next_sequence('comanda_id')
+    else:
+        next_comanda = mesa_existente.get('comanda', 0)
+
     update_data = {
         'numero': data.get('numero', mesa_existente['numero']),
         'estatus': data.get('estatus', mesa_existente['estatus']),
         'cliente': data.get('cliente', mesa_existente['cliente']),
-        'comanda': data.get('comanda', mesa_existente['comanda']),
+        'comanda': next_comanda,
         'mesero_id': mesa_existente['mesero_id'],  
         'corredor_id': mesa_existente['corredor_id'] 
     }
@@ -122,7 +128,8 @@ def actualizar_mesa(mesa_id):
         {'$set': update_data}
     )
 
-    return jsonify({'message': 'Mesa actualizada'})
+    return jsonify({'message': 'Mesa actualizada', 'comanda': next_comanda})
+
 
 @app.route('/api/mesas/<int:mesa_id>', methods=['DELETE'])
 def eliminar_mesa(mesa_id):

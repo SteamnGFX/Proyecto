@@ -14,7 +14,6 @@ class HostScreen extends StatefulWidget {
 class HostState extends State<HostScreen> {
   List<Mesa> mesas = [];
   final TextEditingController _clienteController = TextEditingController();
-  final TextEditingController _comandaController = TextEditingController();
   bool isLoading = true;
 
   @override
@@ -81,20 +80,6 @@ class HostState extends State<HostScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _comandaController,
-                decoration: const InputDecoration(
-                  labelText: 'Número de Comanda',
-                  labelStyle: TextStyle(
-                    color: Colors.purple,
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.purple),
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-              ),
             ],
           ),
           actions: [
@@ -115,12 +100,10 @@ class HostState extends State<HostScreen> {
                 setState(() {
                   mesa.estatus = 'asignada';
                   mesa.cliente = _clienteController.text;
-                  mesa.comanda = int.parse(_comandaController.text);
-                });
+                  });
                 final apiService = Provider.of<MesaService>(context, listen: false);
                 apiService.updateMesa(mesa.id, mesa.estatus, mesa.cliente, mesa.numero, mesa.comanda).then((_) {
                   _clienteController.clear();
-                  _comandaController.clear();
 
                   getMesas();
                   Navigator.pop(context);
