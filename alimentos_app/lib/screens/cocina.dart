@@ -8,20 +8,20 @@ class CocinaScreen extends StatefulWidget {
   const CocinaScreen({super.key});
 
   @override
-  _CocinaScreenState createState() => _CocinaScreenState();
+  CocinaState createState() => CocinaState();
 }
 
-class _CocinaScreenState extends State<CocinaScreen> {
+class CocinaState extends State<CocinaScreen> {
   List<Pedido> pedidos = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _cargarPedidos();
+    getPedidos();
   }
 
-  void _cargarPedidos() async {
+  void getPedidos() async {
     final pedidoService = Provider.of<PedidoService>(context, listen: false);
     try {
       final responsePedidos = await pedidoService.getPedidosPendientes();
@@ -36,7 +36,7 @@ class _CocinaScreenState extends State<CocinaScreen> {
     }
   }
 
-  Future<void> _confirmarPrepararPedido(Pedido pedido) async {
+  Future<void> prepararPedido(Pedido pedido) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -59,11 +59,11 @@ class _CocinaScreenState extends State<CocinaScreen> {
     );
 
     if (confirm == true) {
-      _actualizarEstatusPedido(pedido.id, 'preparando');
+      estatusPedido(pedido.id, 'preparando');
     }
   }
 
-  Future<void> _confirmarListoPedido(Pedido pedido) async {
+  Future<void> terminarPedido(Pedido pedido) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -86,20 +86,20 @@ class _CocinaScreenState extends State<CocinaScreen> {
     );
 
     if (confirm == true) {
-      _actualizarEstatusPedido(pedido.id, 'listo');
+      estatusPedido(pedido.id, 'listo');
     }
   }
 
-  void _actualizarEstatusPedido(int pedidoId, String nuevoEstatus) async {
+  void estatusPedido(int pedidoId, String nuevoEstatus) async {
     final pedidoService = Provider.of<PedidoService>(context, listen: false);
     try {
       await pedidoService.actualizarEstatusPedido(pedidoId, nuevoEstatus);
-      _cargarPedidos(); 
+      getPedidos(); 
     } catch (e) {
     }
   }
 
-  IconData _getIconForEstado(String estado) {
+  IconData getIconEstado(String estado) {
     switch (estado) {
       case 'pendiente':
         return Icons.access_time;
@@ -112,7 +112,7 @@ class _CocinaScreenState extends State<CocinaScreen> {
     }
   }
 
-  Color _getColorForEstado(String estado) {
+  Color getColorEstado(String estado) {
     switch (estado) {
       case 'pendiente':
         return Colors.orange;
@@ -163,10 +163,10 @@ class _CocinaScreenState extends State<CocinaScreen> {
                     final pedido = pedidos[index];
 
                     return Card(
-                      color: Color(0xFFEDE7F6), 
+                      color: const Color(0xFFEDE7F6), 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(
+                        side: const BorderSide(
                           color: Colors.purple,
                           width: 2,
                         ),
@@ -182,9 +182,9 @@ class _CocinaScreenState extends State<CocinaScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  _getIconForEstado(pedido.estatus),
+                                  getIconEstado(pedido.estatus),
                                   size: 30,
-                                  color: _getColorForEstado(pedido.estatus),
+                                  color: getColorEstado(pedido.estatus),
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
@@ -219,7 +219,7 @@ class _CocinaScreenState extends State<CocinaScreen> {
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () =>
-                                          _confirmarPrepararPedido(pedido),
+                                          prepararPedido(pedido),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.purple,
                                         shape: RoundedRectangleBorder(
@@ -241,7 +241,7 @@ class _CocinaScreenState extends State<CocinaScreen> {
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () =>
-                                          _confirmarListoPedido(pedido),
+                                          terminarPedido(pedido),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green,
                                         shape: RoundedRectangleBorder(

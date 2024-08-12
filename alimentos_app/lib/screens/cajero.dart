@@ -8,20 +8,20 @@ class CajaScreen extends StatefulWidget {
   const CajaScreen({super.key});
 
   @override
-  _CajaScreenState createState() => _CajaScreenState();
+  CajaState createState() => CajaState();
 }
 
-class _CajaScreenState extends State<CajaScreen> {
+class CajaState extends State<CajaScreen> {
   List<Pedido> pedidos = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _cargarPedidosListos();
+    getPedidosListos();
   }
 
-  void _cargarPedidosListos() async {
+  void getPedidosListos() async {
     final pedidoService = Provider.of<PedidoService>(context, listen: false);
     try {
       final responsePedidos = await pedidoService.getPedidosListos();
@@ -36,7 +36,7 @@ class _CajaScreenState extends State<CajaScreen> {
     }
   }
 
-  IconData _getIconForEstado(String estado) {
+  IconData getIconEstado(String estado) {
     switch (estado) {
       case 'pendiente':
         return Icons.access_time;
@@ -49,7 +49,7 @@ class _CajaScreenState extends State<CajaScreen> {
     }
   }
 
-  Color _getColorForEstado(String estado) {
+  Color getColorEstado(String estado) {
     switch (estado) {
       case 'pendiente':
         return Colors.orange;
@@ -88,16 +88,16 @@ class _CajaScreenState extends State<CajaScreen> {
               itemBuilder: (context, index) {
                 final pedido = pedidos[index];
                 return GestureDetector(
-                  onTap: () => _mostrarDetallesPedido(context, pedido),
+                  onTap: () => detallesPedidos(context, pedido),
                   child: Container(
                     margin: const EdgeInsets.all(8.0),
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       color:
-                          _getColorForEstado(pedido.estatus).withOpacity(0.1),
+                          getColorEstado(pedido.estatus).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
-                        color: _getColorForEstado(pedido.estatus),
+                        color: getColorEstado(pedido.estatus),
                         width: 2,
                       ),
                     ),
@@ -105,9 +105,9 @@ class _CajaScreenState extends State<CajaScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          _getIconForEstado(pedido.estatus),
+                          getIconEstado(pedido.estatus),
                           size: 40,
-                          color: _getColorForEstado(pedido.estatus),
+                          color: getColorEstado(pedido.estatus),
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -115,7 +115,7 @@ class _CajaScreenState extends State<CajaScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: _getColorForEstado(pedido.estatus),
+                            color: getColorEstado(pedido.estatus),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -135,7 +135,7 @@ class _CajaScreenState extends State<CajaScreen> {
     );
   }
 
-  void _mostrarDetallesPedido(BuildContext context, Pedido pedido) {
+  void detallesPedidos(BuildContext context, Pedido pedido) {
     final total = pedido.detalles.fold<double>(
       0.0,
       (total, detalle) => total + (detalle.cantidad * detalle.productoPrecio),
@@ -150,8 +150,8 @@ class _CajaScreenState extends State<CajaScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Center(
-                child: const Text('Cuenta'),
+              title: const Center(
+                child: Text('Cuenta'),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -178,10 +178,10 @@ class _CajaScreenState extends State<CajaScreen> {
                     ...pedido.detalles.map((detalle) => Text(
                         '➥ ${detalle.productoNombre}\nCantidad: ${detalle.cantidad}\nPrecio:${detalle.productoPrecio}\n')),
                     Padding(
-                      padding: EdgeInsets.only(top: 16.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       child: Text(
                         'Total: \$${total.toStringAsFixed(2)} MXN',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -199,7 +199,7 @@ class _CajaScreenState extends State<CajaScreen> {
                       },
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 16.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       child: Text(
                         'Cambio: \$${cambio.toStringAsFixed(2)} MXN',
                         style: TextStyle(
@@ -239,7 +239,7 @@ class _CajaScreenState extends State<CajaScreen> {
                         ),
                       );
                     } else {
-                      _cobrarPedido(pedido.id);
+                      cobrarPedido(pedido.id);
                       Navigator.of(context).pop();
                     }
                   },
@@ -253,12 +253,12 @@ class _CajaScreenState extends State<CajaScreen> {
     );
   }
 
-  void _cobrarPedido(int pedidoId) async {
+  void cobrarPedido(int pedidoId) async {
     final pedidoService = Provider.of<PedidoService>(context, listen: false);
     try {
       final response = await pedidoService.cobrarPedido(pedidoId);
       if (response['message'] == 'Pedido cobrado') {
-        _cargarPedidosListos();
+        getPedidosListos();
       } else {
         throw Exception('Error al cobrar el pedido');
       }

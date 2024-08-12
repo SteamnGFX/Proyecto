@@ -26,10 +26,10 @@ class RealizarPedidoScreen extends StatefulWidget {
   });
 
   @override
-  _RealizarPedidoScreenState createState() => _RealizarPedidoScreenState();
+  RealizarPedidoState createState() => RealizarPedidoState();
 }
 
-class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
+class RealizarPedidoState extends State<RealizarPedidoScreen> {
   List<Producto> productos = [];
   List<DetallePedido> pedidoDetalles = [];
   bool isLoading = true;
@@ -37,10 +37,10 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
   @override
   void initState() {
     super.initState();
-    _cargarProductosYPedido();
+    getProductosPedidos();
   }
 
-  void _cargarProductosYPedido() async {
+  void getProductosPedidos() async {
     final productoService =
         Provider.of<ProductoService>(context, listen: false);
     try {
@@ -57,7 +57,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
     }
   }
 
-  void _agregarDetalle(int productoId) {
+  void addDetalle(int productoId) {
     setState(() {
       final detalleExistente = pedidoDetalles.firstWhereOrNull(
         (detalle) => detalle.productoId == productoId,
@@ -82,13 +82,13 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
     });
   }
 
-  void _eliminarDetalle(int productoId) {
+  void deleteDetalle(int productoId) {
     setState(() {
       pedidoDetalles.removeWhere((detalle) => detalle.productoId == productoId);
     });
   }
 
-  void _enviarPedido() async {
+  void postPedido() async {
     final apiService = Provider.of<PedidoService>(context, listen: false);
 
     final pedido = Pedido(
@@ -115,7 +115,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
           }
         });
 
-        await _actualizarEstadoMesa(widget.mesaId, 'pedido');
+        await putEstadoMesa(widget.mesaId, 'pedido');
 
         setState(() {
           isLoading = false;
@@ -151,7 +151,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
     );
   }
 
-  Future<void> _actualizarEstadoMesa(int mesaId, String nuevoEstado) async {
+  Future<void> putEstadoMesa(int mesaId, String nuevoEstado) async {
     final mesaService = Provider.of<MesaService>(context, listen: false);
     try {
       await mesaService.updateMesaStatus(mesaId, nuevoEstado);
@@ -203,7 +203,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
                                 title: Text(producto.nombre),
                                 subtitle: Text(
                                     '${producto.descripcion} - \$${producto.precio}'),
-                                onTap: () => _agregarDetalle(producto.id),
+                                onTap: () => addDetalle(producto.id),
                               ),
                             );
                           },
@@ -244,7 +244,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
                                   icon: const Icon(Icons.delete,
                                       color: Colors.red),
                                   onPressed: () =>
-                                      _eliminarDetalle(detalle.productoId),
+                                      deleteDetalle(detalle.productoId),
                                 ),
                               ),
                             );
@@ -258,7 +258,7 @@ class _RealizarPedidoScreenState extends State<RealizarPedidoScreen> {
                             setState(() {
                               isLoading = true;
                             });
-                            _enviarPedido();
+                            postPedido();
                           },
                           icon: const Icon(Icons.send),
                           label: const Text('Enviar Pedido'),

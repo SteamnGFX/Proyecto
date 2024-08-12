@@ -8,10 +8,10 @@ class HostScreen extends StatefulWidget {
   const HostScreen({super.key});
 
   @override
-  _HostScreenState createState() => _HostScreenState();
+  HostState createState() => HostState();
 }
 
-class _HostScreenState extends State<HostScreen> {
+class HostState extends State<HostScreen> {
   List<Mesa> mesas = [];
   final TextEditingController _clienteController = TextEditingController();
   final TextEditingController _comandaController = TextEditingController();
@@ -20,10 +20,10 @@ class _HostScreenState extends State<HostScreen> {
   @override
   void initState() {
     super.initState();
-    _cargarMesas();
+    getMesas();
   }
 
-  void _cargarMesas() async {
+  void getMesas() async {
     final apiService = Provider.of<MesaService>(context, listen: false);
     try {
       final response = await apiService.getMesas();
@@ -38,7 +38,7 @@ class _HostScreenState extends State<HostScreen> {
     }
   }
 
-  void _asignarMesa(BuildContext context, Mesa mesa) {
+  void asignarMesa(BuildContext context, Mesa mesa) {
     if (mesa.estatus == 'comiendo' || mesa.estatus == 'limpieza' || mesa.estatus == 'cobrar') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -56,8 +56,8 @@ class _HostScreenState extends State<HostScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
           ),
-          title: Center(
-            child: const Text(
+          title: const Center(
+            child: Text(
               'ASIGNAR UNA MESA',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class _HostScreenState extends State<HostScreen> {
             children: [
               TextField(
                 controller: _clienteController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nombre del Cliente',
                   labelStyle: TextStyle(
                     color: Colors.purple,
@@ -84,7 +84,7 @@ class _HostScreenState extends State<HostScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _comandaController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Número de Comanda',
                   labelStyle: TextStyle(
                     color: Colors.purple,
@@ -122,7 +122,7 @@ class _HostScreenState extends State<HostScreen> {
                   _clienteController.clear();
                   _comandaController.clear();
 
-                  _cargarMesas();
+                  getMesas();
                   Navigator.pop(context);
                 }).catchError((e) {
                   Navigator.pop(context);
@@ -142,7 +142,7 @@ class _HostScreenState extends State<HostScreen> {
     );
   }
 
-  void _desasignarMesa(BuildContext context, Mesa mesa) {
+  void desasignarMesa(BuildContext context, Mesa mesa) {
     final apiService = Provider.of<MesaService>(context, listen: false);
     setState(() {
       mesa.estatus = 'libre';
@@ -150,7 +150,7 @@ class _HostScreenState extends State<HostScreen> {
       mesa.comanda = 0;
     });
     apiService.updateMesa(mesa.id, mesa.estatus, mesa.cliente, mesa.numero, mesa.comanda).then((_) {
-      _cargarMesas(); 
+      getMesas(); 
     }).catchError((e) {
     });
   }
@@ -190,30 +190,30 @@ class _HostScreenState extends State<HostScreen> {
                 itemBuilder: (context, index) {
                   final mesa = mesas[index];
                   return GestureDetector(
-                    onTap: () => _asignarMesa(context, mesa),
-                    onLongPress: () => _desasignarMesa(context, mesa),
+                    onTap: () => asignarMesa(context, mesa),
+                    onLongPress: () => desasignarMesa(context, mesa),
                     child: Container(
                       margin: const EdgeInsets.all(8.0),
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: _getColorForStatus(mesa.estatus).withOpacity(0.1),
+                        color: getColorStatus(mesa.estatus).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10.0),
                         border: Border.all(
-                          color: _getColorForStatus(mesa.estatus),
+                          color: getColorStatus(mesa.estatus),
                           width: 2,
                         ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _getIconForStatus(mesa.estatus),
+                          getIconStatus(mesa.estatus),
                           const SizedBox(height: 10),
                           Text(
                             'Mesa ${mesa.numero}',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: _getColorForStatus(mesa.estatus),
+                              color: getColorStatus(mesa.estatus),
                             ),
                           ),
                           if (mesa.estatus != 'libre') ...[
@@ -232,7 +232,7 @@ class _HostScreenState extends State<HostScreen> {
     );
   }
 
-  Color _getColorForStatus(String estatus) {
+  Color getColorStatus(String estatus) {
     switch (estatus) {
       case 'libre':
         return Colors.green;
@@ -255,7 +255,7 @@ class _HostScreenState extends State<HostScreen> {
     }
   }
 
-  Widget _getIconForStatus(String estatus) {
+  Widget getIconStatus(String estatus) {
     switch (estatus) {
       case 'libre':
         return const Icon(Icons.event_seat_outlined, size: 40, color: Colors.green);

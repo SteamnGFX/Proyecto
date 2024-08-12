@@ -24,7 +24,7 @@ class MesaConPedidoWidget extends StatelessWidget {
     required this.onPedirCuenta,
   });
 
-  IconData _getIconForEstado(String estado) {
+  IconData getIconEstado(String estado) {
     switch (estado) {
       case 'libre':
         return Icons.event_seat_outlined;
@@ -47,7 +47,7 @@ class MesaConPedidoWidget extends StatelessWidget {
     }
   }
 
-  Color _getColorForEstado(String estado) {
+  Color getColorEstado(String estado) {
     switch (estado) {
       case 'libre':
         return Colors.green;
@@ -79,17 +79,17 @@ class MesaConPedidoWidget extends StatelessWidget {
         margin: const EdgeInsets.all(8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: _getColorForEstado(estado).withOpacity(0.1),
+          color: getColorEstado(estado).withOpacity(0.1),
           borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(color: _getColorForEstado(estado), width: 2),
+          border: Border.all(color: getColorEstado(estado), width: 2),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              _getIconForEstado(estado),
+              getIconEstado(estado),
               size: 40,
-              color: _getColorForEstado(estado),
+              color: getColorEstado(estado),
             ),
             const SizedBox(height: 10),
             Text(
@@ -97,7 +97,7 @@ class MesaConPedidoWidget extends StatelessWidget {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: _getColorForEstado(estado)),
+                  color: getColorEstado(estado)),
             ),
             if (estado != 'libre') ...[
               const SizedBox(height: 8),

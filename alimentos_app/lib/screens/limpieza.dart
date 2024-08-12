@@ -4,25 +4,25 @@ import 'package:provider/provider.dart';
 import 'package:alimentos_app/models/mesa.dart';
 import 'package:alimentos_app/services/mesaService.dart';
 
-class CorredorScreen extends StatefulWidget {
+class LimpiadorScreen extends StatefulWidget {
   final int corredorId;
-  const CorredorScreen({super.key, required this.corredorId});
+  const LimpiadorScreen({super.key, required this.corredorId});
 
   @override
-  _CorredorScreenState createState() => _CorredorScreenState();
+  LimpiadorState createState() => LimpiadorState();
 }
 
-class _CorredorScreenState extends State<CorredorScreen> {
+class LimpiadorState extends State<LimpiadorScreen> {
   List<Mesa> mesas = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _cargarMesas();
+    getMesas();
   }
 
-  void _cargarMesas() async {
+  void getMesas() async {
     final apiService = Provider.of<MesaService>(context, listen: false);
     try {
       final response = await apiService.getMesas();
@@ -37,7 +37,7 @@ class _CorredorScreenState extends State<CorredorScreen> {
     }
   }
 
-  void _confirmarLimpieza(int mesaId) {
+  void establecerLimpieza(int mesaId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -56,7 +56,7 @@ class _CorredorScreenState extends State<CorredorScreen> {
               child: const Text('Sí'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _limpiarMesa(mesaId);
+                limpiarMesa(mesaId);
               },
             ),
           ],
@@ -65,19 +65,19 @@ class _CorredorScreenState extends State<CorredorScreen> {
     );
   }
 
-  void _limpiarMesa(int mesaId) async {
+  void limpiarMesa(int mesaId) async {
     final apiService = Provider.of<MesaService>(context, listen: false);
     try {
       final response = await apiService.limpiarMesa(mesaId);
       if (response['message'] == 'Mesa actualizada a libre') {
-        _cargarMesas();
+        getMesas();
       } else {
         throw Exception('Error al limpiar');
       }
     } catch (e) {}
   }
 
-  IconData _getIconForEstado(String estado) {
+  IconData getIconEstado(String estado) {
     switch (estado) {
       case 'limpieza':
         return Icons.cleaning_services_outlined;
@@ -86,7 +86,7 @@ class _CorredorScreenState extends State<CorredorScreen> {
     }
   }
 
-  Color _getColorForEstado(String estado) {
+  Color getColorEstado(String estado) {
     switch (estado) {
       case 'limpieza':
         return Colors.red;
@@ -128,15 +128,15 @@ class _CorredorScreenState extends State<CorredorScreen> {
               itemBuilder: (context, index) {
                 final mesa = mesas[index];
                 return GestureDetector(
-                  onTap: () => _confirmarLimpieza(mesa.id),
+                  onTap: () => establecerLimpieza(mesa.id),
                   child: Container(
                     margin: const EdgeInsets.all(8.0),
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: _getColorForEstado(mesa.estatus).withOpacity(0.1),
+                      color: getColorEstado(mesa.estatus).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
-                        color: _getColorForEstado(mesa.estatus),
+                        color: getColorEstado(mesa.estatus),
                         width: 2,
                       ),
                     ),
@@ -144,9 +144,9 @@ class _CorredorScreenState extends State<CorredorScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          _getIconForEstado(mesa.estatus),
+                          getIconEstado(mesa.estatus),
                           size: 40,
-                          color: _getColorForEstado(mesa.estatus),
+                          color: getColorEstado(mesa.estatus),
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -154,7 +154,7 @@ class _CorredorScreenState extends State<CorredorScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: _getColorForEstado(mesa.estatus),
+                            color: getColorEstado(mesa.estatus),
                           ),
                         ),
                         const SizedBox(height: 8),

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:alimentos_app/models/pedido.dart';
 
 class PedidoService {
-  final String apiUrl = 'http://192.168.1.178:5002';
+  final String apiUrl = 'http://127.0.0.1:5002/api';
 
   Future<http.Response> createPedido(Pedido pedido) async {
     try {

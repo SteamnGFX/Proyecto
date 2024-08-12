@@ -4,7 +4,7 @@ import 'package:alimentos_app/services/loginService.dart';
 import 'package:alimentos_app/screens/host.dart';
 import 'package:alimentos_app/screens/mesero.dart';
 import 'package:alimentos_app/screens/cocina.dart';
-import 'package:alimentos_app/screens/corredor.dart';
+import 'package:alimentos_app/screens/limpieza.dart';
 import 'package:alimentos_app/screens/cajero.dart';
 import 'package:alimentos_app/screens/admin.dart';
 
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CorredorScreen(corredorId: userId),
+                            builder: (context) => LimpiadorScreen(corredorId: userId),
                           ),
                         );
                       } else if (response['rol'] == 'caja') {

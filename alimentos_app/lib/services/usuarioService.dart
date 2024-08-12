@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:alimentos_app/models/usuario.dart';
 
 class UsuarioService {
-  final String apiUrl = 'http://192.168.1.178:5002/usuarios';
+  final String apiUrl = 'http://127.0.0.1:5002/api/usuarios';
 
   Future<List<Usuario>> obtenerUsuarios() async {
     try {
-      final response = await http.get(Uri.parse('$apiUrl/obtener_usuarios'));
+      final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
@@ -29,7 +29,7 @@ class UsuarioService {
   }
 
   Future<void> eliminarUsuario(String usuarioId) async {
-    final response = await http.delete(Uri.parse('$apiUrl/eliminar_usuario/$usuarioId'));
+    final response = await http.delete(Uri.parse('$apiUrl/$usuarioId'));
 
     if (response.statusCode != 200) {
       throw Exception('Error al eliminar usuario');
@@ -38,7 +38,7 @@ class UsuarioService {
 
   Future<void> crearUsuario(Usuario usuario) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/crear_usuario'),
+      Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'nombre': usuario.nombre,

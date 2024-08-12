@@ -11,20 +11,20 @@ class MeseroScreen extends StatefulWidget {
   const MeseroScreen({super.key, required this.meseroId});
 
   @override
-  _MeseroScreenState createState() => _MeseroScreenState();
+  MeseroState createState() => MeseroState();
 }
 
-class _MeseroScreenState extends State<MeseroScreen> {
+class MeseroState extends State<MeseroScreen> {
   List<Mesa> mesas = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _cargarMesas();
+    getMesas();
   }
 
-  void _cargarMesas() async {
+  void getMesas() async {
     final apiService = Provider.of<MesaService>(context, listen: false);
     try {
       final response = await apiService.getMesas();
@@ -39,7 +39,7 @@ class _MeseroScreenState extends State<MeseroScreen> {
     }
   }
 
-  Future<void> _navegarRealizarPedido(int mesaId, String estatusMesa, String cliente, int comanda) async {
+  Future<void> pantallaRealizarPedido(int mesaId, String estatusMesa, String cliente, int comanda) async {
     if (estatusMesa == 'limpieza' || estatusMesa == 'cobrar') {
       return;
     }
@@ -58,16 +58,16 @@ class _MeseroScreenState extends State<MeseroScreen> {
     );
 
     if (result == true) {
-      _cargarMesas();
+      getMesas();
     }
   }
 
-  void _entregarPedido(int mesaId) async {
+  void marcarEntregadoPedido(int mesaId) async {
     final apiService = Provider.of<MesaService>(context, listen: false);
     try {
       final response = await apiService.entregarComida(mesaId);
       if (response['message'] == 'Mesa actualizada a comiendo') {
-        _cargarMesas();
+        getMesas();
       } else {
         throw Exception('Error al entregar comida');
       }
@@ -75,7 +75,7 @@ class _MeseroScreenState extends State<MeseroScreen> {
     }
   }
 
-  void _pedirCuenta(int mesaId) async {
+  void pedirCuentaMesa(int mesaId) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -101,7 +101,7 @@ class _MeseroScreenState extends State<MeseroScreen> {
       try {
         final response = await apiService.pedirCuenta(mesaId);
         if (response['message'] == 'Mesa actualizada a limpieza' || response['message'] == 'Mesa actualizada a cobrar') {
-          _cargarMesas();
+          getMesas();
         } else {
           throw Exception('Error al actualizar la mesa a limpieza');
         }
@@ -110,7 +110,7 @@ class _MeseroScreenState extends State<MeseroScreen> {
     }
   }
 
-  void _cobrarMesa(int mesaId) async {
+  void cobrarCuentaMesa(int mesaId) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -132,7 +132,7 @@ class _MeseroScreenState extends State<MeseroScreen> {
     );
 
     if (confirm == true) {
-      _cargarMesas();
+      getMesas();
     }
   }
 
@@ -174,23 +174,23 @@ class _MeseroScreenState extends State<MeseroScreen> {
                   comanda: mesa.comanda,
                   onTap: () {
                     if (mesa.estatus != 'libre' && mesa.estatus != 'limpieza' && mesa.estatus != 'cobrar') {
-                      _navegarRealizarPedido(mesa.id, mesa.estatus, mesa.cliente, mesa.comanda);
+                      pantallaRealizarPedido(mesa.id, mesa.estatus, mesa.cliente, mesa.comanda);
                     }
                   },
                   onPedido: () {
                     if (mesa.estatus != 'libre' && mesa.estatus != 'limpieza' && mesa.estatus != 'cobrar') {
-                      _navegarRealizarPedido(mesa.id, mesa.estatus, mesa.cliente, mesa.comanda);
+                      pantallaRealizarPedido(mesa.id, mesa.estatus, mesa.cliente, mesa.comanda);
                     }
                   },
                   onDesasignar: () {},
                   onEntregar: (int mesaId) {
                     if (mesa.estatus == 'listo') {
-                      _entregarPedido(mesaId);
+                      marcarEntregadoPedido(mesaId);
                     }
                   },
                   onPedirCuenta: (int mesaId) {
                     if (mesa.estatus == 'comiendo') {
-                      _pedirCuenta(mesaId);
+                      pedirCuentaMesa(mesaId);
                     }
                   },
                 );

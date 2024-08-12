@@ -15,8 +15,8 @@ class _AdminScreenState extends State<AdminScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = [
-    UsuariosTab(),
-    ReportesTab(),
+    const UsuariosTab(),
+    const ReportesTab(),
   ];
 
   @override
@@ -93,7 +93,7 @@ class _UsuariosTabState extends State<UsuariosTab> {
   @override
   Widget build(BuildContext context) {
     final usuarioService = Provider.of<UsuarioService>(context);
-    final currentUserEmail =
+    const currentUserEmail =
         'tu_email_actual@gmail.com';
 
     return Column(

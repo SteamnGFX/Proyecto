@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:alimentos_app/models/mesa.dart';
 
 class MesaService {
-  final String apiUrl = "http://192.168.1.178:5002";
+  final String apiUrl = "http://127.0.0.1:5002/api";
 
   Future<List<Mesa>> getMesas() async {
     final response = await http.get(Uri.parse('$apiUrl/mesas'));
